@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -86,6 +86,7 @@ public class JobDAGInfo implements Serializable {
         }
 
         JsonArray vertexInfoMapString = new JsonArray();
+        // Issue 2 Fix: Defensively protect the vertexInfoMap loop
         if (vertexInfoMap != null) {
             for (Map.Entry<Long, VertexInfo> entry : vertexInfoMap.entrySet()) {
                 VertexInfo vertexInfo = entry.getValue();
@@ -95,6 +96,8 @@ public class JobDAGInfo implements Serializable {
                 
                 JsonObject vertexInfoJsonObj = new JsonObject();
                 vertexInfoJsonObj.add("vertexId", vertexInfo.getVertexId() != null ? vertexInfo.getVertexId().toString() : "");
+                
+                // Deep nested path protection for vertexInfo.getType().getType()
                 String typeStr = (vertexInfo.getType() != null && vertexInfo.getType().getType() != null) 
                         ? vertexInfo.getType().getType() 
                         : "";
@@ -117,3 +120,4 @@ public class JobDAGInfo implements Serializable {
         jsonObject.add("vertexInfoMap", vertexInfoMapString);
         return jsonObject;
     }
+}
